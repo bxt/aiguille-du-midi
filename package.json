@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "fmt": "biome check --write ./src README.md",
+    "check": "biome check ./src README.md"
   },
   "dependencies": {
     "preact": "^10.27.2"

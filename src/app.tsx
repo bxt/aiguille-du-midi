@@ -1,45 +1,64 @@
-import { useState } from "preact/hooks";
-import viteLogo from "/vite.svg";
-import preactLogo from "./assets/preact.svg";
-import "./app.css";
+import type { TargetedEvent } from "preact";
+import { useCallback, useState } from "preact/hooks";
+import { colorPatch } from "./app.module.css";
+
+const hexInputProps = {
+  type: "range",
+  min: "0",
+  max: "255",
+};
 
 export function App() {
-  const [count, setCount] = useState(0);
+  const [red, setRed] = useState(0);
+  const [green, setGreen] = useState(0);
+  const [blue, setBlue] = useState(0);
+
+  const onRedChange = useCallback(
+    (event: TargetedEvent<HTMLInputElement>) =>
+      setRed(parseInt(event.currentTarget.value, 10)),
+    []
+  );
+
+  const onGreenChange = useCallback(
+    (event: TargetedEvent<HTMLInputElement>) =>
+      setGreen(parseInt(event.currentTarget.value, 10)),
+    []
+  );
+
+  const onBlueChange = useCallback(
+    (event: TargetedEvent<HTMLInputElement>) =>
+      setBlue(parseInt(event.currentTarget.value, 10)),
+    []
+  );
 
   return (
     <>
+      <h1>Aiguille du MIDI</h1>
+      <input {...hexInputProps} name="red" value={red} onInput={onRedChange} />
+      <input
+        {...hexInputProps}
+        name="green"
+        value={green}
+        onInput={onGreenChange}
+      />
+      <input
+        {...hexInputProps}
+        name="blue"
+        value={blue}
+        onInput={onBlueChange}
+      />
       <div>
-        <a href="https://vite.dev" target="_blank" rel="noopener">
-          <img src={viteLogo} class="logo" alt="Vite logo" />
-        </a>
-
-        <a href="https://preactjs.com" target="_blank" rel="noopener">
-          <img src={preactLogo} class="logo preact" alt="Preact logo" />
-        </a>
+        rgb({red}, {green}, {blue})
       </div>
-      <h1>Vite + Preact</h1>
-      <div class="card">
-        <button onClick={() => setCount((count) => count + 1)} type="button">
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/app.tsx</code> and save to test HMR
-        </p>
+      <div>
+        #{red.toString(16).padStart(2, "0")}
+        {green.toString(16).padStart(2, "0")}
+        {blue.toString(16).padStart(2, "0")}
       </div>
-      <p>
-        Check out{" "}
-        <a
-          href="https://preactjs.com/guide/v10/getting-started#create-a-vite-powered-preact-app"
-          target="_blank"
-          rel="noopener"
-        >
-          create-preact
-        </a>
-        , the official Preact + Vite starter
-      </p>
-      <p class="read-the-docs">
-        Click on the Vite and Preact logos to learn more
-      </p>
+      <div
+        class={colorPatch}
+        style={{ backgroundColor: `rgb(${red}, ${green}, ${blue})` }}
+      ></div>
     </>
   );
 }

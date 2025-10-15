@@ -11,6 +11,7 @@
     "check": "biome check ./src README.md"
   },
   "dependencies": {
+    "@preact/signals": "^2.3.2",
     "preact": "^10.27.2"
   },
   "devDependencies": {

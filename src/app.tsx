@@ -1,5 +1,4 @@
-import type { TargetedEvent } from "preact";
-import { useCallback, useState } from "preact/hooks";
+import { computed, signal } from "@preact/signals";
 import { colorPatch } from "./app.module.css";
 
 const hexInputProps = {
@@ -8,57 +7,53 @@ const hexInputProps = {
   max: "255",
 };
 
+const red = signal(0);
+const green = signal(0);
+const blue = signal(0);
+
+const rgb = computed(() => `rgb(${red}, ${green}, ${blue})`);
+const toHex = (value: number): string => value.toString(16).padStart(2, "0");
+const hex = computed(() => {
+  return `#${toHex(red.value)}${toHex(green.value)}${toHex(blue.value)}`;
+});
+
+function ColorPatch() {
+  return <div class={colorPatch} style={{ backgroundColor: rgb.value }}></div>;
+}
+
 export function App() {
-  const [red, setRed] = useState(0);
-  const [green, setGreen] = useState(0);
-  const [blue, setBlue] = useState(0);
-
-  const onRedChange = useCallback(
-    (event: TargetedEvent<HTMLInputElement>) =>
-      setRed(parseInt(event.currentTarget.value, 10)),
-    []
-  );
-
-  const onGreenChange = useCallback(
-    (event: TargetedEvent<HTMLInputElement>) =>
-      setGreen(parseInt(event.currentTarget.value, 10)),
-    []
-  );
-
-  const onBlueChange = useCallback(
-    (event: TargetedEvent<HTMLInputElement>) =>
-      setBlue(parseInt(event.currentTarget.value, 10)),
-    []
-  );
+  console.log("App render");
 
   return (
     <>
       <h1>Aiguille du MIDI</h1>
-      <input {...hexInputProps} name="red" value={red} onInput={onRedChange} />
+      <input
+        {...hexInputProps}
+        name="red"
+        value={red}
+        onInput={(event) => {
+          red.value = parseInt(event.currentTarget.value, 10);
+        }}
+      />
       <input
         {...hexInputProps}
         name="green"
         value={green}
-        onInput={onGreenChange}
+        onInput={(event) => {
+          green.value = parseInt(event.currentTarget.value, 10);
+        }}
       />
       <input
         {...hexInputProps}
         name="blue"
         value={blue}
-        onInput={onBlueChange}
+        onInput={(event) => {
+          blue.value = parseInt(event.currentTarget.value, 10);
+        }}
       />
-      <div>
-        rgb({red}, {green}, {blue})
-      </div>
-      <div>
-        #{red.toString(16).padStart(2, "0")}
-        {green.toString(16).padStart(2, "0")}
-        {blue.toString(16).padStart(2, "0")}
-      </div>
-      <div
-        class={colorPatch}
-        style={{ backgroundColor: `rgb(${red}, ${green}, ${blue})` }}
-      ></div>
+      <div>{rgb}</div>
+      <div>{hex}</div>
+      <ColorPatch />
     </>
   );
 }

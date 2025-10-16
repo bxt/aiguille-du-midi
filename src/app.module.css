@@ -1,27 +1,23 @@
-.colorPatch {
-  width: 200px;
-  height: 200px;
-  margin: 1rem auto;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-
-.pad {
-  width: 40px;
-  height: 40px;
-  margin: 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  display: inline-flex;
+.header {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  background-color: #423f3f;
+  gap: 1rem;
+  padding: 1rem;
 
-  @media (prefers-color-scheme: light) {
-    background-color: #f0f0f0;
+  div {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 }
 
-.padPressed {
-  background-color: #4caf50;
+.content {
+  flex: 1;
+  padding: 1rem;
+  padding-block-end: 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }

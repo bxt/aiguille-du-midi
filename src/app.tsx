@@ -1,6 +1,11 @@
 import { computed, effect, signal } from "@preact/signals";
-import { colorPatch } from "./app.module.css";
-import { joystickNormalized, knobs } from "./midi-signals";
+import { colorPatch, pad, padPressed } from "./app.module.css";
+import {
+  joystickNormalized,
+  knobs,
+  padsPressed,
+  padsVelocity,
+} from "./midi-signals";
 
 const hexInputProps = {
   type: "range",
@@ -13,13 +18,13 @@ const green = signal(0);
 const blue = signal(0);
 
 effect(() => {
-  red.value = knobs[0].value * 2;
+  red.value = Math.max(knobs[0].value * 2, padsVelocity[0].value * 2);
 });
 effect(() => {
-  green.value = knobs[1].value * 2;
+  green.value = Math.max(knobs[1].value * 2, padsVelocity[1].value * 2);
 });
 effect(() => {
-  blue.value = knobs[2].value * 2;
+  blue.value = Math.max(knobs[2].value * 2, padsVelocity[2].value * 2);
 });
 
 const rgb = computed(() => `rgb(${red}, ${green}, ${blue})`);
@@ -39,6 +44,14 @@ function ColorPatch() {
         transform: `translate(${toPx(x.value)}, ${toPx(y.value)})`,
       }}
     ></div>
+  );
+}
+
+function Pad({ index }: { index: number }) {
+  return (
+    <div class={`${pad} ${padsPressed[index - 1].value ? padPressed : ""}`}>
+      {index}
+    </div>
   );
 }
 
@@ -77,6 +90,18 @@ export function App() {
       <div>jx: {joystickNormalized.x}</div>
       <div>jy: {joystickNormalized.y}</div>
       <ColorPatch />
+      <div>
+        <Pad index={5} />
+        <Pad index={6} />
+        <Pad index={7} />
+        <Pad index={8} />
+      </div>
+      <div>
+        <Pad index={1} />
+        <Pad index={2} />
+        <Pad index={3} />
+        <Pad index={4} />
+      </div>
     </>
   );
 }

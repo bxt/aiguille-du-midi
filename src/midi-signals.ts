@@ -1,5 +1,18 @@
 import { computed, signal } from "@preact/signals";
 
+type NoteDirection = "off" | "on" | "aftertouch";
+
+type NoteState = [NoteDirection, number];
+
+const commandNames: Record<0x8 | 0x9 | 0xa, NoteDirection> = {
+  // biome-ignore lint/complexity/useSimpleNumberKeys: Using hex for MIDI commands
+  0x8: "off",
+  // biome-ignore lint/complexity/useSimpleNumberKeys: Using hex for MIDI commands
+  0x9: "on",
+  // biome-ignore lint/complexity/useSimpleNumberKeys: Using hex for MIDI commands
+  0xa: "aftertouch",
+};
+
 export const knobs = [signal(0), signal(0), signal(0), signal(0)];
 export const knobsBank2 = [signal(0), signal(0), signal(0), signal(0)];
 export const joystick = { x: signal(0), y: signal(0) };
@@ -7,6 +20,16 @@ export const joystickNormalized = {
   x: computed(() => joystick.x.value / 0x2000),
   y: computed(() => joystick.y.value / 0x7f),
 };
+const pads = Array.from({ length: 8 }, () => signal<NoteState>(["off", 0]));
+const padsBank2 = Array.from({ length: 8 }, () =>
+  signal<NoteState>(["off", 0])
+);
+export const padsPressed = Array.from({ length: 8 }, (_, index) =>
+  computed(() => pads[index].value[0] !== "off")
+);
+export const padsVelocity = Array.from({ length: 8 }, (_, index) =>
+  computed(() => pads[index].value[1])
+);
 
 function onMIDISuccess(midiAccess: MIDIAccess) {
   console.log("MIDI ready!");
@@ -41,35 +64,50 @@ function listInputsAndOutputs(midiAccess: MIDIAccess) {
   }
 }
 
+function printMIDIMessage(data: Uint8Array<ArrayBuffer>) {
+  let str = `MIDI message [${data.length}]:`;
+  for (const character of data) {
+    str += ` 0x${character.toString(16).padStart(2, "0")}`;
+  }
+  console.log(str);
+}
+
 function onMIDIMessage(event: MIDIMessageEvent) {
   if (!event.data || event.data.length < 2) return;
 
-  let str = `MIDI message received at timestamp ${event.timeStamp}[${event.data.length} bytes]: `;
-  for (const character of event.data) {
-    str += `0x${character.toString(16)} `;
-  }
-  console.log(str);
-
   const command = event.data[0] >> 4;
   const channel = event.data[0] & 0xf;
-  if (channel !== 0) return; // only listen to channel 1
 
-  if (command === 0xb) {
+  if (channel === 0 && command === 0xb) {
     const [_, controllerNumber, controllerValue] = event.data;
     if (controllerNumber === 1) {
       joystick.y.value = controllerValue;
-    }
-
-    if (controllerNumber >= 0x46 && controllerNumber <= 0x49) {
+    } else if (controllerNumber >= 0x46 && controllerNumber <= 0x49) {
       knobs[controllerNumber - 0x46].value = controllerValue;
-    }
-    if (controllerNumber >= 0x4a && controllerNumber <= 0x4d) {
+    } else if (controllerNumber >= 0x4a && controllerNumber <= 0x4d) {
       knobsBank2[controllerNumber - 0x4a].value = controllerValue;
+    } else {
+      printMIDIMessage(event.data);
     }
-  } else if (command === 0xe) {
+  } else if (channel === 0 && command === 0xe) {
     const [_, lsb, msb] = event.data;
     const value = (msb << 7) + lsb;
     joystick.x.value = value - 0x2000;
+  } else if (command === 0x9 || command === 0x8 || command === 0xa) {
+    const [_, note, velocity] = event.data;
+
+    if (channel === 9 && note >= 0x24 && note <= 0x2b) {
+      pads[note - 0x24].value = [commandNames[command], velocity];
+    } else if (channel === 9 && note >= 0x2c && note <= 0x33) {
+      padsBank2[note - 0x2c].value = [commandNames[command], velocity];
+    } else if (channel === 0) {
+      printMIDIMessage(event.data);
+      // TODO: Handle normal notes
+    } else {
+      printMIDIMessage(event.data);
+    }
+  } else {
+    printMIDIMessage(event.data);
   }
 }
 

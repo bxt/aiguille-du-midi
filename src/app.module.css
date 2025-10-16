@@ -5,3 +5,23 @@
   border: 1px solid #ccc;
   border-radius: 8px;
 }
+
+.pad {
+  width: 40px;
+  height: 40px;
+  margin: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #423f3f;
+
+  @media (prefers-color-scheme: light) {
+    background-color: #f0f0f0;
+  }
+}
+
+.padPressed {
+  background-color: #4caf50;
+}

@@ -21,3 +21,13 @@
   justify-content: center;
   align-items: center;
 }
+
+.backButton {
+  display: inline-block;
+  padding-inline-end: 0.5rem;
+  transition: transform 0.25s;
+}
+
+.backButtonCollapsed {
+  transform: scale(0, 1);
+}

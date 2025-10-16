@@ -1,4 +1,11 @@
-import { content, header } from "./app.module.css";
+import { computed } from "@preact/signals";
+import {
+  backButton,
+  backButtonCollapsed,
+  content,
+  header,
+} from "./app.module.css";
+import { page } from "./route-signals.ts";
 import { Router } from "./router.tsx";
 
 function toggleFullScreen() {
@@ -11,12 +18,18 @@ function toggleFullScreen() {
   }
 }
 
+const backClassName = computed(() => {
+  return `${backButton} ${page.value === "home" ? backButtonCollapsed : ""}`;
+});
+
 export function App() {
   return (
     <>
       <div class={header}>
         <div>
-          <a href="#home">Aiguille du MIDI</a>
+          <a href="#home">
+            <span class={backClassName}>&lt;</span>Aiguille du MIDI
+          </a>
         </div>
         <div>
           <a href="https://github.com/bxt/aiguille-du-midi">GitHub</a>

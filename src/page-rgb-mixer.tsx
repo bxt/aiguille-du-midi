@@ -34,10 +34,10 @@ const hex = computed(() => {
 });
 
 const joystickXFormatted = computed(() =>
-  joystickNormalized.x.value.toFixed(3)
+  joystickNormalized.x.value.toFixed(3),
 );
 const joystickYFormatted = computed(() =>
-  joystickNormalized.y.value.toFixed(3)
+  joystickNormalized.y.value.toFixed(3),
 );
 
 function ColorPatch() {

@@ -22,13 +22,13 @@ export const joystickNormalized = {
 };
 const pads = Array.from({ length: 8 }, () => signal<NoteState>(["off", 0]));
 const padsBank2 = Array.from({ length: 8 }, () =>
-  signal<NoteState>(["off", 0])
+  signal<NoteState>(["off", 0]),
 );
 export const padsPressed = Array.from({ length: 8 }, (_, index) =>
-  computed(() => pads[index].value[0] !== "off")
+  computed(() => pads[index].value[0] !== "off"),
 );
 export const padsVelocity = Array.from({ length: 8 }, (_, index) =>
-  computed(() => pads[index].value[1])
+  computed(() => pads[index].value[1]),
 );
 
 function onMIDISuccess(midiAccess: MIDIAccess) {
@@ -52,14 +52,14 @@ function listInputsAndOutputs(midiAccess: MIDIAccess) {
         ` id:'${input.id}'` +
         ` manufacturer:'${input.manufacturer}'` +
         ` name:'${input.name}'` +
-        ` version:'${input.version}'`
+        ` version:'${input.version}'`,
     );
   }
 
   for (const entry of midiAccess.outputs) {
     const output = entry[1];
     console.log(
-      `Output port [type:'${output.type}'] id:'${output.id}' manufacturer:'${output.manufacturer}' name:'${output.name}' version:'${output.version}'`
+      `Output port [type:'${output.type}'] id:'${output.id}' manufacturer:'${output.manufacturer}' name:'${output.name}' version:'${output.version}'`,
     );
   }
 }

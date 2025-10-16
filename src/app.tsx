@@ -1,7 +1,5 @@
-import { Page } from "./page-rgb-mixer";
+import { Router } from "./router.tsx";
 
 export function App() {
-  console.log("App render");
-
-  return <Page />;
+  return <Router />;
 }

@@ -33,6 +33,13 @@ const hex = computed(() => {
   return `#${toHex(red.value)}${toHex(green.value)}${toHex(blue.value)}`;
 });
 
+const joystickXFormatted = computed(() =>
+  joystickNormalized.x.value.toFixed(3)
+);
+const joystickYFormatted = computed(() =>
+  joystickNormalized.y.value.toFixed(3)
+);
+
 function ColorPatch() {
   const toPx = (value: number): string => `${Math.round(value * 24)}px`;
   const { x, y } = joystickNormalized;
@@ -87,8 +94,8 @@ export function Page() {
       />
       <div>{rgb}</div>
       <div>{hex}</div>
-      <div>jx: {joystickNormalized.x}</div>
-      <div>jy: {joystickNormalized.y}</div>
+      <div>jx: {joystickXFormatted}</div>
+      <div>jy: {joystickYFormatted}</div>
       <ColorPatch />
       <div>
         <Pad index={5} />

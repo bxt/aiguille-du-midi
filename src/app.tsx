@@ -1,5 +1,6 @@
-import { computed, signal } from "@preact/signals";
+import { computed, effect, signal } from "@preact/signals";
 import { colorPatch } from "./app.module.css";
+import { joystickNormalized, knobs } from "./midi-signals";
 
 const hexInputProps = {
   type: "range",
@@ -11,6 +12,16 @@ const red = signal(0);
 const green = signal(0);
 const blue = signal(0);
 
+effect(() => {
+  red.value = knobs[0].value * 2;
+});
+effect(() => {
+  green.value = knobs[1].value * 2;
+});
+effect(() => {
+  blue.value = knobs[2].value * 2;
+});
+
 const rgb = computed(() => `rgb(${red}, ${green}, ${blue})`);
 const toHex = (value: number): string => value.toString(16).padStart(2, "0");
 const hex = computed(() => {
@@ -18,7 +29,17 @@ const hex = computed(() => {
 });
 
 function ColorPatch() {
-  return <div class={colorPatch} style={{ backgroundColor: rgb.value }}></div>;
+  const toPx = (value: number): string => `${Math.round(value * 24)}px`;
+  const { x, y } = joystickNormalized;
+  return (
+    <div
+      class={colorPatch}
+      style={{
+        backgroundColor: rgb.value,
+        transform: `translate(${toPx(x.value)}, ${toPx(y.value)})`,
+      }}
+    ></div>
+  );
 }
 
 export function App() {
@@ -53,6 +74,8 @@ export function App() {
       />
       <div>{rgb}</div>
       <div>{hex}</div>
+      <div>jx: {joystickNormalized.x}</div>
+      <div>jy: {joystickNormalized.y}</div>
       <ColorPatch />
     </>
   );

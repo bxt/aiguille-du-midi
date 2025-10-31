@@ -8,6 +8,9 @@ export function Page() {
         <li>
           <a href="#rgb-mixer">RGB mixer</a>
         </li>
+        <li>
+          <a href="#keyboard">Keyboard</a>
+        </li>
       </ul>
     </>
   );

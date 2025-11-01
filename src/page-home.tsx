@@ -11,6 +11,9 @@ export function Page() {
         <li>
           <a href="#keyboard">Keyboard</a>
         </li>
+        <li>
+          <a href="#pajaro">Pajaro</a>
+        </li>
       </ul>
     </>
   );

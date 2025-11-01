@@ -1,0 +1,17 @@
+.pajaro,
+:has(+ .pajaro)::after {
+  max-width: 400px;
+}
+
+.pajaro {
+  position: absolute;
+  bottom: 0;
+}
+
+:has(+ .pajaro)::after {
+  display: block;
+  aspect-ratio: 1;
+  width: 100vw;
+  content: "";
+  margin-block-end: -5rem;
+}

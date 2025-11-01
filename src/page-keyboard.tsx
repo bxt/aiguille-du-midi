@@ -29,7 +29,7 @@ oscillator2.connect(gainNode);
 effect(() => {
   gainNode.gain.linearRampToValueAtTime(
     knobs[0].value / 127,
-    audioContext.currentTime + 0.01
+    audioContext.currentTime + 0.01,
   );
 });
 

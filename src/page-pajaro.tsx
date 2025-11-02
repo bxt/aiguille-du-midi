@@ -1,10 +1,81 @@
-import { useSignal } from "@preact/signals";
+import { type Signal, useComputed, useSignal } from "@preact/signals";
+import { useEffect, useRef } from "preact/hooks";
 import { pajaro } from "./page-pajaro.module.css";
+
+const viewBoxSize = 1000;
+const stokeWidth = 12;
+
+function Eye({
+  eyeX,
+  mouseX,
+  mouseY,
+}: {
+  eyeX: number;
+  mouseX: Signal<number>;
+  mouseY: Signal<number>;
+}) {
+  const eyesY = 341;
+
+  const eyeRadius = 115;
+  const pupilRadius = stokeWidth / 2;
+  const pupilMargin = 30;
+  const maxPupilDistance = eyeRadius - stokeWidth - pupilRadius - pupilMargin;
+
+  const pupilOffsetX = useComputed(() => mouseX.value - eyeX);
+  const pupilOffsetY = useComputed(() => mouseY.value - eyesY);
+
+  const distance = useComputed(() =>
+    Math.sqrt(
+      pupilOffsetX.value * pupilOffsetX.value +
+        pupilOffsetY.value * pupilOffsetY.value,
+    ),
+  );
+
+  const clampedDistance = useComputed(() =>
+    Math.min(maxPupilDistance, distance.value),
+  );
+
+  const angle = useComputed(() =>
+    Math.atan2(pupilOffsetY.value, pupilOffsetX.value),
+  );
+
+  const pupilX = useComputed(() => {
+    return eyeX + clampedDistance.value * Math.cos(angle.value);
+  });
+  const pupilY = useComputed(() => {
+    return eyesY + clampedDistance.value * Math.sin(angle.value);
+  });
+
+  return (
+    <>
+      <ellipse cx={eyeX} cy={eyesY} rx={eyeRadius} ry={eyeRadius} fill="#fff" />
+      <circle cx={pupilX} cy={pupilY} r={pupilRadius} />
+    </>
+  );
+}
 
 export function Page() {
   document.title = "Aiguille du MIDI – Pajaro";
 
   const involvedness = useSignal(0);
+
+  const mouseX = useSignal(0);
+  const mouseY = useSignal(0);
+
+  const svgRef = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (event: MouseEvent) => {
+      if (!svgRef.current) return;
+      const rect = svgRef.current.getBoundingClientRect();
+      mouseX.value = ((event.clientX - rect.left) / rect.width) * viewBoxSize;
+      mouseY.value = ((event.clientY - rect.top) / rect.height) * viewBoxSize;
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  });
 
   return (
     <>
@@ -23,23 +94,20 @@ export function Page() {
         />
       </label>
       <svg
+        ref={svgRef}
         class={pajaro}
         version="1.1"
-        viewBox="0 0 1000 1000"
+        viewBox={`0 0 ${viewBoxSize} ${viewBoxSize}`}
         xmlns="http://www.w3.org/2000/svg"
       >
         <title>A cute bird</title>
-        <g stroke="#000" stroke-width="12">
+        <g stroke="#000" stroke-width={stokeWidth}>
           <path
             d="m250 1e3c-139.52-1140.7 686.63-1171 473.66 0"
             fill="#d1c3b3"
           />
-          <g fill="#fff">
-            <ellipse cx="303.6" cy="340.95" rx="114.45" ry="117.52" />
-            <ellipse cx="738.56" cy="340.95" rx="114.45" ry="117.52" />
-            <circle cx="354.76" cy="385.29" r="6.4516" />
-            <circle cx="687.02" cy="385.29" r="6.4516" />
-          </g>
+          <Eye eyeX={303} mouseX={mouseX} mouseY={mouseY} />
+          <Eye eyeX={738} mouseX={mouseX} mouseY={mouseY} />
           <g>
             <path
               d="m528.01 182.46c40.42-28.566 44.686-78.73 12.798-150.49 60.988 61.414 71.36 121.92 31.117 181.53"

@@ -31,6 +31,8 @@ export const padsVelocity = Array.from({ length: 8 }, (_, index) =>
   computed(() => pads[index].value[1]),
 );
 
+export const notes = signal<{ note: number; velocity: number }[]>([]);
+
 function onMIDISuccess(midiAccess: MIDIAccess) {
   console.log("MIDI ready!");
 
@@ -101,8 +103,17 @@ function onMIDIMessage(event: MIDIMessageEvent) {
     } else if (channel === 9 && note >= 0x2c && note <= 0x33) {
       padsBank2[note - 0x2c].value = [commandNames[command], velocity];
     } else if (channel === 0) {
-      printMIDIMessage(event.data);
-      // TODO: Handle normal notes
+      if (velocity > 0) {
+        if (notes.value.some((n) => n.note === note)) {
+          notes.value = notes.value.map((n) =>
+            n.note === note ? { note, velocity } : n,
+          );
+        } else {
+          notes.value = [...notes.value, { note, velocity }];
+        }
+      } else {
+        notes.value = notes.value.filter((n) => n.note !== note);
+      }
     } else {
       printMIDIMessage(event.data);
     }

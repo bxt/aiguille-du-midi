@@ -11,18 +11,18 @@
     "check": "biome check ./src README.md"
   },
   "dependencies": {
-    "@preact/signals": "^2.3.2",
-    "preact": "^10.27.2"
+    "@preact/signals": "^2.8.1",
+    "preact": "^10.28.4"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.2.6",
-    "@preact/preset-vite": "^2.10.2",
-    "@types/node": "^24.6.0",
+    "@biomejs/biome": "2.4.4",
+    "@preact/preset-vite": "^2.10.3",
+    "@types/node": "^25.3.0",
     "typescript": "~5.9.3",
     "typescript-plugin-css-modules": "^5.2.0",
-    "vite": "npm:rolldown-vite@7.1.14"
+    "vite": "npm:rolldown-vite@7.3.1"
   },
   "overrides": {
-    "vite": "npm:rolldown-vite@7.1.14"
+    "vite": "npm:rolldown-vite@7.3.1"
   }
 }
